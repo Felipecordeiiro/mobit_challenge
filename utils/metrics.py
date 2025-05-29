@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import torch
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.metrics import precision_recall_fscore_support
@@ -44,3 +45,10 @@ def evaluate_imbalanced_dataset(model, testloader, class_names):
     print(f"Weighted F1-Score: {weighted_f1:.3f}")
     
     return all_preds, all_labels
+
+def save_metrics_to_csv(resnet_report, efficientnet_report):
+    df_resnet = pd.DataFrame(resnet_report).T
+    df_efficientnet = pd.DataFrame(efficientnet_report).T
+    
+    df_resnet.to_csv('./models/resnet_results.csv')
+    df_efficientnet.to_csv('./models/efficientnet_results.csv')
