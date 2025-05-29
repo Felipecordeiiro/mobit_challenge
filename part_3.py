@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -67,6 +68,8 @@ if "__main__" == __name__:
     class_weights_tensor = compute_class_weights(train_df, device=DEVICE)
     criterion = nn.CrossEntropyLoss(weight=class_weights_tensor)
     class_name = ["Outros", "1", "2", "3"]
+
+    os.makedirs("./models/", exist_ok=True)
 
     print("Treinando ResNet50...")
     resnet_optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, resnet.parameters()), lr=1e-4, weight_decay=1e-5)
