@@ -47,7 +47,7 @@ source .venv/bin/activate  # Linux/Mac
 uv pip install -r requirements.txt
 ```
 
-Somente após instalar as dependências
+Somente após instalar as dependências, instale separadamente o torch baseado na versao do seu CUDA
 ```
 uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 ```
