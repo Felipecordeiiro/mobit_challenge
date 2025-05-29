@@ -20,6 +20,9 @@ def plot_roc_pr_curves(y_true, y_probs, class_names):
 
     # One-hot encode labels
     y_true_bin = label_binarize(y_true, classes=range(n_classes))
+    
+    y_probs = np.array(y_probs)
+    y_true_bin = np.array(y_true_bin)
 
     # === ROC Curves ===
     fpr = dict()
