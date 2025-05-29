@@ -3,7 +3,7 @@ from sklearn.metrics import ConfusionMatrixDisplay, classification_report, confu
 import torch
 from tqdm import tqdm
 
-def evaluate_model(model, dataloader, class_names, device='cuda'):
+def evaluate_model(model, model_name, dataloader, class_names, device='cuda'):
     model.eval()
     y_true, y_pred = [], []
     with torch.no_grad():
@@ -13,12 +13,13 @@ def evaluate_model(model, dataloader, class_names, device='cuda'):
             _, preds = torch.max(outputs, 1)
             y_pred.extend(preds.cpu().numpy())
             y_true.extend(labels.numpy())
-            
+
     print(classification_report(y_true, y_pred, target_names=class_names))
     cm = confusion_matrix(y_true, y_pred)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)
     disp.plot(cmap=plt.cm.Blues)
     plt.title('Confusion Matrix')
+    plt.savefig('./models/matriz_confusao.png', bbox_inches='tight', dpi=300)
     plt.show()
     # Retorne métricas para comparação
     report = classification_report(y_true, y_pred, target_names=class_names, output_dict=True)
