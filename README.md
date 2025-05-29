@@ -24,6 +24,7 @@ Aplicação prática de um modelo treinado para identificação e classificaçã
 - Python >= 3.11
 - `uv` instalado globalmente
 - CUDA Toolkit instalado (opcional, mas recomendado para para aceleração por GPU)
+  - Versão do CUDA = 11.8
 
 ### Como instalar o `uv`
 
@@ -44,4 +45,9 @@ source .venv/bin/activate  # Linux/Mac
 
 ```
 uv pip install -r requirements.txt
+```
+
+Somente após instalar as dependências
+```
+uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 ```

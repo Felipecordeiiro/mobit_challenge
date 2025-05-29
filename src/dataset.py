@@ -1,5 +1,8 @@
+import os
+
 from collections import Counter
 from torch.utils.data import Dataset
+from PIL import Image
 
 class BMWDataset(Dataset):
     def __init__(self, dataframe, img_dir, basic_transform, augmented_transform=None, 
