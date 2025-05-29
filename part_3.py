@@ -3,6 +3,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 
 from src.analyses import plot_distribution_comparison
+from src.eval import evaluate_model
 from src.models import tl_efficientnetv2, tl_resnet
 from src.train import train_model
 from src.transforms import get_basic_transform, get_augmented_transform
@@ -62,16 +63,17 @@ if "__main__" == __name__:
     class_weights_tensor = compute_class_weights(train_df, device=DEVICE)
     criterion = nn.CrossEntropyLoss(weight=class_weights_tensor)
 
-    print("Treinando ResNet50...")
-    resnet_optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, resnet.parameters()), lr=1e-3)
-    resnet = train_model(resnet, trainloader, valloader, criterion, resnet_optimizer, num_epochs=40)
-    torch.save(resnet.state_dict(), "./models/resnet50_tl.pth")
+    #print("Treinando ResNet50...")
+    #resnet_optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, resnet.parameters()), lr=1e-3)
+    #resnet = train_model(resnet, trainloader, valloader, criterion, resnet_optimizer, num_epochs=40)
+    #torch.save(resnet.state_dict(), "./models/resnet50_tl.pth")
+    resnet.load_state_dict(torch.load("./models/resnet50_tl.pth",  weights_only=True))
     print("Avaliando ResNet50...")
-    #resnet_metrics = evaluate_model(resnet, dataloaders['test'], [1,2,3,"Outros"])
+    resnet_metrics = evaluate_model(resnet, testloader, [1, 2, 3,"Outros"])
 
     #print("Treinando EfficientNetV2...") 
     #efficientnet_optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, resnet.parameters()), lr=1e-3)   
     #efficientnet = train_model(efficientnet, trainloader, valloader, criterion, resnet_optimizer, num_epochs=40)
     #torch.save(efficientnet.state_dict(), "./models/efficientnetv2s_tl.pth")
     #print("Avaliando EfficientNetV2...")
-    #efficientnet_metrics = evaluate_model(efficientnet, dataloaders['test'], [1,2,3,"Outros"])
+    #efficientnet_metrics = evaluate_model(efficientnet, testloader, [1,2,3,"Outros"])

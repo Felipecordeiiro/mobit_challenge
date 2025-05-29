@@ -13,6 +13,7 @@ def evaluate_model(model, dataloader, class_names, device='cuda'):
             _, preds = torch.max(outputs, 1)
             y_pred.extend(preds.cpu().numpy())
             y_true.extend(labels.numpy())
+            
     print(classification_report(y_true, y_pred, target_names=class_names))
     cm = confusion_matrix(y_true, y_pred)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)
