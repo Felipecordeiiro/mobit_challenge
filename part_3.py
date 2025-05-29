@@ -70,7 +70,7 @@ if "__main__" == __name__:
     #torch.save(resnet.state_dict(), "./models/resnet50_tl.pth")
     resnet.load_state_dict(torch.load("./models/resnet50_tl.pth",  weights_only=True))
     print("Avaliando ResNet50...")
-    resnet_metrics = evaluate_model(resnet, testloader, ["Outros", "1", "2", "3"])
+    resnet_metrics = evaluate_model(resnet, "ResNet50", testloader, ["Outros", "1", "2", "3"])
 
     #print("Treinando EfficientNetV2...") 
     #efficientnet_optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, resnet.parameters()), lr=1e-3)   
@@ -78,7 +78,7 @@ if "__main__" == __name__:
     #torch.save(efficientnet.state_dict(), "./models/efficientnetv2s_tl.pth")
     #efficientnet.load_state_dict(torch.load("./models/efficientnetv2s_tl.pth",  weights_only=True))
     #print("Avaliando EfficientNetV2...")
-    #efficientnet_metrics = evaluate_model(efficientnet, testloader, ["Outros", "1", "2", "3"])
+    #efficientnet_metrics = evaluate_model(efficientnet, "EfficientNetV2", testloader, ["Outros", "1", "2", "3"])
 
     # Salvando resultados
     #save_metrics_to_csv(resnet_metrics, efficientnet_metrics)
