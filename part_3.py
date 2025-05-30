@@ -3,10 +3,13 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
+from class_weight import compute_class_weights
+from dataset import BMWDataset
 from src.analyses import plot_distribution_comparison
 from src.eval import evaluate_model
 from src.models import tl_convnet_t, tl_efficientnetv2_s, tl_resnet50
 from src.train import train_model
+from transforms import get_augmented_transform, get_basic_transform
 from utils.data import get_data
 from utils.metrics import evaluate_imbalanced_dataset, save_metrics_to_csv
 
@@ -66,12 +69,12 @@ if "__main__" == __name__:
     criterion = nn.CrossEntropyLoss(weight=class_weights_tensor)
     class_name = ["Outros", "1", "2", "3"]
 
-    os.makedirs("./models/", exist_ok=True)
+    os.makedirs("./models/resnet50/", exist_ok=True)
 
     print("Treinando ResNet50...")
     resnet_optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, resnet.parameters()), lr=1e-4, weight_decay=1e-5)
     resnet = train_model(resnet, "ResNet50", trainloader, valloader, criterion, resnet_optimizer, num_epochs=15)
-    torch.save(resnet.state_dict(), "./models/resnet50_tl.pth")
+    torch.save(resnet.state_dict(), "./models/resnet50/resnet50_tl.pth")
     #resnet.load_state_dict(torch.load("./models/resnet50_tl.pth",  weights_only=True))
     print("Avaliando ResNet50...")
     resnet_metrics = evaluate_model(resnet, "ResNet50", testloader, class_name)
