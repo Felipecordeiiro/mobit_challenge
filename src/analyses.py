@@ -16,7 +16,6 @@ def analyze_distribution(dataset, dataset_name):
     return counts
 
 def plot_distribution_comparison(train_df, train_dataset, val_dataset, test_dataset):
-
     train_counts = analyze_distribution(train_dataset, "TREINO")
     val_counts = analyze_distribution(val_dataset, "VALIDAÇÃO") 
     test_counts = analyze_distribution(test_dataset, "TESTE")
@@ -45,4 +44,5 @@ def plot_distribution_comparison(train_df, train_dataset, val_dataset, test_data
     ax2.set_xticklabels(class_names, rotation=45)
     
     plt.tight_layout()
+    plt.savefig(f'./results/parte_3/distribuição_comparativa.png', bbox_inches='tight', dpi=300)
     plt.show()

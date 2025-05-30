@@ -1,7 +1,7 @@
 import torch
-from utils.metrics import generating_graphs
+from utils.parte_3.metrics import generating_graphs
 
-def train_model(model, model_name, trainloader, valloader, criterion, optimizer, device='cuda', num_epochs=10):
+def train_model(model, model_name, trainloader, valloader, criterion, optimizer, fine_tuning, device='cuda', num_epochs=10):
     train_losses = []
     train_accuracies = []
     val_losses = []
@@ -51,6 +51,6 @@ def train_model(model, model_name, trainloader, valloader, criterion, optimizer,
         print(f"Epoch [{epoch+1}/{num_epochs}] - Loss: {running_loss/len(trainloader):.4f}, "
               f"Val Loss: {val_loss/len(valloader):.4f}, Val Acc: {correct/total:.4f}")
     
-    generating_graphs(num_epochs, model_name, train_losses, val_losses, train_accuracies, val_accuracies)
+    generating_graphs(num_epochs, model_name, train_losses, val_losses, train_accuracies, val_accuracies, fine_tuning)
     
     return model

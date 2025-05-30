@@ -1,26 +1,22 @@
 import cv2 as cv
 from ultralytics import YOLO
+from utils.parte_2.views import view, view_results
 
 # Versão nano
-model = YOLO("yolov8n.pt")
+model_n = YOLO("yolov8n.pt")
+# Versão small
+model_s = YOLO("yolov8s.pt")
 
 img = cv.imread("data/person.png")
-results = model.predict(source=img, save=True, project='./results/parte_2/')
+results = model_n.predict(source=img, save=True, project='./results/parte_2/n/')
+results_2 = model_s.predict(source=img, save=True, project='./results/parte_2/s/')
 
-for r in results:
-  print("Resultados importantes:")
-  print(r.boxes.data)
-  print(r.boxes.cls)
-  print(r.boxes.xyxy)
-  classes = r.boxes.cls.cpu().numpy()
-  person_count = (classes == 0).sum()  # Baseado na anotação do dataset COCO, a classe 0 é person
-  print(f"Pessoas detectadas: {person_count}")
 
-def view(path):
-  img_pred = cv.imread(path)
-  cv.imshow("Deteccao", img_pred)
-  cv.waitKey(0)
-  cv.destroyAllWindows()
+person_count = view_results(results)
+person_count_2 = view_results(results_2)
+print(f"Pessoas detectadas (usando yolov8n): {person_count}")
+print(f"Pessoas detectadas (usando yolov8s): {person_count_2}")
 
-path_image = "./results/parte_2/predict/image0.jpg"
-view(path_image)
+path_image = "./results/parte_2/n/predict/image0.jpg"
+path_image_2 = "./results/parte_2/s/predict/image0.jpg"
+view(path_image, path_image_2)
