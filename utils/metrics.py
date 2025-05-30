@@ -8,71 +8,47 @@ from sklearn.metrics import (
     roc_auc_score,
     auc,
     roc_curve,
-    precision_recall_curve,
-    average_precision_score,
     confusion_matrix,
     ConfusionMatrixDisplay
 )
 from sklearn.preprocessing import label_binarize
 
-def plot_roc_pr_curves(y_true, y_probs, class_names):
+def plot_multiclass_roc(y_true, y_probs, class_names, modelo_nome="modelo"):
     n_classes = len(class_names)
-
-    # One-hot encode labels
     y_true_bin = label_binarize(y_true, classes=range(n_classes))
-    
     y_probs = np.array(y_probs)
-    y_true_bin = np.array(y_true_bin)
 
-    # === ROC Curves ===
     fpr = dict()
     tpr = dict()
     roc_auc = dict()
+
+    plt.figure(figsize=(8, 6))
+
+    # ROC para cada classe
     for i in range(n_classes):
         fpr[i], tpr[i], _ = roc_curve(y_true_bin[:, i], y_probs[:, i])
         roc_auc[i] = auc(fpr[i], tpr[i])
+        plt.plot(fpr[i], tpr[i], lw=2, label=f'{class_names[i]} (AUC = {roc_auc[i]:.2f})')
 
-    # Macro-average ROC AUC
+    # ROC macro-average
     all_fpr = np.unique(np.concatenate([fpr[i] for i in range(n_classes)]))
     mean_tpr = np.zeros_like(all_fpr)
     for i in range(n_classes):
         mean_tpr += np.interp(all_fpr, fpr[i], tpr[i])
     mean_tpr /= n_classes
-    roc_auc["macro"] = auc(all_fpr, mean_tpr)
+    macro_auc = auc(all_fpr, mean_tpr)
+    plt.plot(all_fpr, mean_tpr, color='navy', lw=2, linestyle='--',
+             label=f'Média macro (AUC = {macro_auc:.2f})')
 
-    # === Precision-Recall Curves ===
-    precision = dict()
-    recall = dict()
-    avg_precision = dict()
-    for i in range(n_classes):
-        precision[i], recall[i], _ = precision_recall_curve(y_true_bin[:, i], y_probs[:, i])
-        avg_precision[i] = average_precision_score(y_true_bin[:, i], y_probs[:, i])
-    avg_precision["macro"] = average_precision_score(y_true_bin, y_probs, average="macro")
-
-    # === Plot ROC Curves ===
-    plt.figure(figsize=(12, 5))
-
-    plt.subplot(1, 2, 1)
-    for i in range(n_classes):
-        plt.plot(fpr[i], tpr[i], label=f'{class_names[i]} (AUC = {roc_auc[i]:.2f})')
-    plt.plot([0, 1], [0, 1], 'k--', alpha=0.6)
-    plt.title(f'ROC Curve (Macro AUC = {roc_auc["macro"]:.2f})')
+    plt.plot([0, 1], [0, 1], 'k--', lw=1)
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.legend()
-    plt.grid(True)
-
-    # === Plot Precision-Recall Curves ===
-    plt.subplot(1, 2, 2)
-    for i in range(n_classes):
-        plt.plot(recall[i], precision[i], label=f'{class_names[i]} (AP = {avg_precision[i]:.2f})')
-    plt.title(f'Precision-Recall Curve (Macro AP = {avg_precision["macro"]:.2f})')
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.legend()
-    plt.grid(True)
-
+    plt.title(f'Curva ROC - {modelo_nome}')
+    plt.legend(loc='lower right')
     plt.tight_layout()
+    plt.savefig(f'./results/parte_3/{modelo_nome}_roc_curve.png', dpi=300)
     plt.show()
 
 def evaluate_imbalanced_dataset(model, model_name, testloader, class_names):
@@ -128,7 +104,7 @@ def evaluate_imbalanced_dataset(model, model_name, testloader, class_names):
     
     # === plot_roc_pr_curves ===
 
-    plot_roc_pr_curves(all_labels, all_probs, class_names)
+    plot_multiclass_roc(all_labels, all_probs, class_names, model_name)
 
     # === Matriz de confusão ===
     cm = confusion_matrix(all_labels, all_preds)
@@ -137,7 +113,7 @@ def evaluate_imbalanced_dataset(model, model_name, testloader, class_names):
     plt.title('Confusion Matrix - ' + model_name)
     plt.xlabel('Predicted Label')
     plt.ylabel('True Label')
-    plt.savefig(f'./results/val_{model_name}_matriz_confusao.png', bbox_inches='tight', dpi=300)
+    plt.savefig(f'./results/parte_3/val_{model_name}_matriz_confusao.png', bbox_inches='tight', dpi=300)
     plt.show()
 
     # === Gráficos de Precision, Recall, F1 ===
@@ -153,7 +129,7 @@ def evaluate_imbalanced_dataset(model, model_name, testloader, class_names):
     plt.legend()
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
     plt.tight_layout()
-    plt.savefig(f'./results/val_{model_name}_PRF1.png', bbox_inches='tight', dpi=300)
+    plt.savefig(f'./results/parte_3/val_{model_name}_PRF1.png', bbox_inches='tight', dpi=300)
     plt.show()
 
 def generating_graphs(num_epochs, model_name, train_losses, val_losses, train_accuracies, val_accuracies):
@@ -181,7 +157,7 @@ def generating_graphs(num_epochs, model_name, train_losses, val_losses, train_ac
     plt.legend()
 
     plt.tight_layout()
-    plt.savefig(f"./results/{model_name}", dpi=300)
+    plt.savefig(f"./results/parte_3/{model_name}", dpi=300)
     plt.show()
 
 
@@ -190,6 +166,6 @@ def save_metrics_to_csv(resnet_report, efficientnet_report, convnext_report):
     df_efficientnet = pd.DataFrame(efficientnet_report).T
     df_convnext_t = pd.DataFrame(convnext_report).T
     
-    df_resnet.to_csv('./results/resnet50_results.csv')
-    df_efficientnet.to_csv('./results/efficientnetv2_s_results.csv')
-    df_convnext_t.to_csv('./results/convnext_t_results.csv')
+    df_resnet.to_csv('./results/parte_3/resnet50_results.csv')
+    df_efficientnet.to_csv('./results/parte_3/efficientnetv2_s_results.csv')
+    df_convnext_t.to_csv('./results/parte_3/convnext_t_results.csv')
