@@ -70,6 +70,8 @@ if "__main__" == __name__:
     class_name = ["Outros", "1", "2", "3"]
 
     os.makedirs("./models/resnet50/", exist_ok=True)
+    os.makedirs("./models/efficientnetv2s/", exist_ok=True)
+    os.makedirs("./models/convnext_tiny/", exist_ok=True)
 
     print("Treinando ResNet50...")
     resnet_optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, resnet.parameters()), lr=1e-4, weight_decay=1e-5)
