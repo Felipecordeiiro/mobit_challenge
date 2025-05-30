@@ -33,6 +33,10 @@ print(f"Número de objetos detectados: {num_objetos}")
 img_contornos = image.copy()
 cv.drawContours(img_contornos, contours, -1, (255, 0, 0), 2)
 
+cv.putText(img_contornos, f'Objetos: {num_objetos}', (10, 40), 
+           cv.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
+cv.imwrite("./results/parte_1/output_image.png", img_contornos)
+
 #cv.imwrite("output_image.png", image)
 cv.imshow("Imagem com contornos", img_contornos)
 cv.waitKey(0)
